@@ -338,16 +338,17 @@ func (api *Client) CloseConversationContext(ctx context.Context, channelID strin
 }
 
 // CreateConversation initiates a public or private channel-based conversation
-func (api *Client) CreateConversation(channelName string, isPrivate bool) (*Channel, error) {
-	return api.CreateConversationContext(context.Background(), channelName, isPrivate)
+func (api *Client) CreateConversation(channelName string, isPrivate bool, users ...string) (*Channel, error) {
+	return api.CreateConversationContext(context.Background(), channelName, isPrivate, users...)
 }
 
 // CreateConversationContext initiates a public or private channel-based conversation with a custom context
-func (api *Client) CreateConversationContext(ctx context.Context, channelName string, isPrivate bool) (*Channel, error) {
+func (api *Client) CreateConversationContext(ctx context.Context, channelName string, isPrivate bool, users ...string) (*Channel, error) {
 	values := url.Values{
 		"token":      {api.token},
 		"name":       {channelName},
 		"is_private": {strconv.FormatBool(isPrivate)},
+		"user_ids":   {strings.Join(users, ",")},
 	}
 	response, err := api.channelRequest(ctx, "conversations.create", values)
 	if err != nil {
